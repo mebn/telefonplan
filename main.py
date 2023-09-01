@@ -4,12 +4,29 @@ from random import randrange
 
 # See tower here: http://camera.colourbynumbers.org/axis-cgi/jpg/image.cgi
 
+# colors as RGB
+red = [255,0,0]
+green = [0,255,0]
+blue = [0,0,255]
+yellow = [255,255,0]
+
+
 def get_hash():
     url = "http://api.colourbynumbers.org/cbn-live/requestLock"
     res = requests.get(url).json()
     if res["status"]["code"] == 0:
         return None
     return res["hash"]
+
+
+def get_hash_while():
+    hash = None
+    while hash == None:
+        hash = get_hash()
+        if hash == None:
+            print("no hash")
+            time.sleep(1)
+    return hash
 
 
 def set_colors(hash, colors):
@@ -27,16 +44,7 @@ def get_colors_string(colors):
     return s
 
 
-hash = None
-while hash == None:
-    hash = get_hash()
-    if hash == None:
-        print("no hash")
-        time.sleep(1)
-
-print(hash)
-
-def random_colors():
+def random_colors(hash):
     while True:
         random_colors_list = []
         for _ in range(10):
@@ -44,16 +52,13 @@ def random_colors():
         random_colors = get_colors_string(random_colors_list)
 
         res = set_colors(hash, random_colors)
-        if res["status"]["code"] != 1:
+        if res["status"]["code"] == 0 and res["status"]["description"] == "invalid hash":
             print("color not set", res)
+            return
         time.sleep(1)
 
-red = [255,0,0]
-green = [0,255,0]
-blue = [0,0,255]
-yellow = [255,255,0]
 
-def toggle_colors():
+def toggle_colors(hash):
     tick = True
 
     color1 = []
@@ -67,11 +72,19 @@ def toggle_colors():
     while True:
         color = color1 if tick else color2
         res = set_colors(hash, color)
-        if res["status"]["code"] != 1:
+        if res["status"]["code"] == 0 and res["status"]["description"] == "invalid hash":
             print("color not set", res)
+            return
         tick = not tick
         time.sleep(2)
 
 
-random_colors()
-# toggle_colors()
+def main():
+    while True:
+        hash = get_hash_while()
+        print(hash)
+        random_colors(hash)
+
+
+if __name__ == "__main__":
+    main()

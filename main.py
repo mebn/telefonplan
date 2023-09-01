@@ -73,5 +73,5 @@ def toggle_colors():
         time.sleep(2)
 
 
-# random_colors()
-toggle_colors()
+random_colors()
+# toggle_colors()

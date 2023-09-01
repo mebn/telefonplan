@@ -2,6 +2,8 @@ import requests
 import time
 from random import randrange
 
+# See tower here: http://camera.colourbynumbers.org/axis-cgi/jpg/image.cgi
+
 def get_hash():
     url = "http://api.colourbynumbers.org/cbn-live/requestLock"
     res = requests.get(url).json()
